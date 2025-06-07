@@ -37,19 +37,6 @@ export class BlogController {
     });
   }
 
-  @Get('/post/:postID')
-  async getPost(
-    @Res() res: any,
-    @Param('postID', new ValidateObjectId()) postID,
-  ) {
-    const post = await this.blogService.getPost(postID);
-    if (!post) {
-      throw new NotFoundException('Post does not exist!');
-    }
-
-    return res.status(HttpStatus.OK).json(post);
-  }
-
   @Put('/edit')
   async editPost(
     @Res() res: any,
@@ -79,5 +66,20 @@ export class BlogController {
       message: 'Post has been deleted successfully',
       post: deletedPost,
     });
+  }
+
+  @Get('/:postID')
+  async getPost(
+    @Param('postID', new ValidateObjectId()) postID: string,
+  ) {
+    const post = await this.blogService.getPost(postID);
+    if (!post) {
+      throw new NotFoundException('Post does not exist!');
+    }
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Post retrieved successfully',
+      post,
+    }
   }
 }
