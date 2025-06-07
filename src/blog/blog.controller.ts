@@ -14,11 +14,21 @@ import {
 import { BlogService } from './blog.service';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { ValidateObjectId } from './shared/pipes/validate-object-id.pipes';
-@Controller('blog')
+@Controller('blogs')
 export class BlogController {
   constructor(private blogService: BlogService) {}
 
-  @Post('/post')
+  @Get()
+  async getPosts() {
+    const posts = await this.blogService.getPosts();
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Posts retrieved successfully',
+      posts,
+    };
+  }
+
+  @Post()
   async addPost(@Res() res: any, @Body() createPostDTO: CreatePostDTO) {
     const newPost = await this.blogService.addPost(createPostDTO);
     return res.status(HttpStatus.CREATED).json({
@@ -38,12 +48,6 @@ export class BlogController {
     }
 
     return res.status(HttpStatus.OK).json(post);
-  }
-
-  @Get('posts')
-  async getPosts(@Res() res: any) {
-    const posts = await this.blogService.getPosts();
-    return res.status(HttpStatus.OK).json(posts);
   }
 
   @Put('/edit')
